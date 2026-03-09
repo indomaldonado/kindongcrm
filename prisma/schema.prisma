@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Supporter {
+  id                String             @id @default(cuid())
+  name              String
+  email             String?
+  phone             String?
+  category          String             // "DONOR", "INTERCESSOR", "BOTH"
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  donations         Donation[]
+  prayerCommitments PrayerCommitment[]
+}
+
+model Donation {
+  id          String    @id @default(cuid())
+  supporterId String
+  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
+  amount      Float
+  date        DateTime  @default(now())
+  notes       String?
+}
+
+model PrayerCommitment {
+  id          String    @id @default(cuid())
+  supporterId String
+  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
+  frequency   String    // "DAILY", "WEEKLY", "MONTHLY"
+  dayOfWeek   String?   // "Monday", "Tuesday", etc.
+  notes       String?
+}
