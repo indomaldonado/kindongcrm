@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,7 +12,7 @@ model Supporter {
   name              String
   email             String?
   phone             String?
-  category          String             // "DONOR", "INTERCESSOR", "BOTH"
+  category          String
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   donations         Donation[]
@@ -25,17 +22,26 @@ model Supporter {
 model Donation {
   id          String    @id @default(cuid())
   supporterId String
-  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
   amount      Float
   date        DateTime  @default(now())
   notes       String?
+  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
 }
 
 model PrayerCommitment {
   id          String    @id @default(cuid())
   supporterId String
-  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
-  frequency   String    // "DAILY", "WEEKLY", "MONTHLY"
-  dayOfWeek   String?   // "Monday", "Tuesday", etc.
+  frequency   String
+  dayOfWeek   String?
   notes       String?
+  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
 }
