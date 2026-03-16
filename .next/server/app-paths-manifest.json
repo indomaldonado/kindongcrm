@@ -1,3 +1,6 @@
 {
+  "/email/page": "app/email/page.js",
+  "/supporters/[id]/page": "app/supporters/[id]/page.js",
+  "/supporters/page": "app/supporters/page.js",
   "/page": "app/page.js"
 }
