@@ -1,7 +1,109 @@
 "use server";
 
-import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import prisma from "@/lib/prisma";
+
+export async function createLead(formData: FormData) {
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const possibleCategory = formData.get("possibleCategory") as string;
+    const notes = formData.get("notes") as string;
+
+    await prisma.lead.create({
+        data: {
+            name,
+            email,
+            phone,
+            possibleCategory,
+            notes,
+        },
+    });
+
+    revalidatePath("/leads");
+}
+
+export async function getLeads(query?: string) {
+    const where: any = {};
+    if (query) {
+        where.OR = [
+            { name: { contains: query } },
+            { email: { contains: query } },
+            { phone: { contains: query } },
+        ];
+    }
+
+    return await prisma.lead.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+    });
+}
+
+export async function getLeadDetails(id: string) {
+    return await prisma.lead.findUnique({
+        where: { id },
+    });
+}
+
+export async function updateLead(formData: FormData) {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const possibleCategory = formData.get("possibleCategory") as string;
+    const notes = formData.get("notes") as string;
+
+    await prisma.lead.update({
+        where: { id },
+        data: { name, email, phone, possibleCategory, notes },
+    });
+
+    revalidatePath(`/leads/${id}`);
+    revalidatePath("/leads");
+}
+
+export async function deleteLead(formData: FormData) {
+    const id = formData.get("id") as string;
+
+    await prisma.lead.delete({
+        where: { id },
+    });
+
+    const { redirect } = await import("next/navigation");
+    revalidatePath("/leads");
+    redirect("/leads");
+}
+
+export async function convertLeadToSupporter(formData: FormData) {
+    const leadId = formData.get("leadId") as string;
+    const category = formData.get("category") as string;
+
+    const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+    });
+
+    if (!lead) {
+        throw new Error("Lead not found");
+    }
+
+    // Create supporter
+    await prisma.supporter.create({
+        data: {
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone,
+            category,
+        },
+    });
+
+    // Delete lead
+    await prisma.lead.delete({
+        where: { id: leadId },
+    });
+
+    revalidatePath("/leads");
+    revalidatePath("/supporters");
+}
 
 export async function createSupporter(formData: FormData) {
     const name = formData.get("name") as string;

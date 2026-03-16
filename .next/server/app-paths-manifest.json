@@ -1,6 +1,8 @@
 {
+  "/page": "app/page.js",
+  "/leads/page": "app/leads/page.js",
   "/email/page": "app/email/page.js",
-  "/supporters/[id]/page": "app/supporters/[id]/page.js",
-  "/supporters/page": "app/supporters/page.js",
-  "/page": "app/page.js"
+  "/leads/[id]/page": "app/leads/[id]/page.js",
+  "/donations/page": "app/donations/page.js",
+  "/reports/page": "app/reports/page.js"
 }

@@ -1,11 +1,9 @@
-"use client";
-
 import "./globals.css";
 import Link from "next/link";
-import { LayoutDashboard, Users, Heart, MessageSquare, TrendingUp, Mail } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { LayoutDashboard, Users, Heart, MessageSquare, TrendingUp, Mail, UserPlus } from "lucide-react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
+import NavLink from "@/components/NavLink";
 
 export default function RootLayout({
     children,
@@ -30,6 +28,7 @@ export default function RootLayout({
 
                             <nav className="flex flex-col gap-3">
                                 <NavLink href="/" icon={<LayoutDashboard size={20} />} label="Dashboard" />
+                                <NavLink href="/leads" icon={<UserPlus size={20} />} label="Leads" />
                                 <NavLink href="/supporters" icon={<Users size={20} />} label="Supporters" />
                                 <NavLink href="/donations" icon={<Heart size={20} />} label="Donations" />
                                 <NavLink href="/whatsapp" icon={<MessageSquare size={20} />} label="WhatsApp" />
@@ -57,25 +56,5 @@ export default function RootLayout({
                 </ThemeProvider>
             </body>
         </html>
-    );
-}
-
-function NavLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
-    const pathname = usePathname();
-    const isActive = pathname === href;
-
-    return (
-        <Link
-            href={href}
-            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 border ${isActive
-                ? "bg-amber-500/15 border-amber-500/30 text-accent shadow-lg shadow-amber-900/10"
-                : "border-transparent text-dim hover:bg-amber-500/10 hover:border-amber-500/20 hover:text-accent"
-                } group`}
-        >
-            <span className={`${isActive ? "text-accent" : "text-zinc-500 group-hover:text-accent"} transition-colors`}>
-                {icon}
-            </span>
-            <span className="font-medium">{label}</span>
-        </Link>
     );
 }
